@@ -24,9 +24,10 @@ const Mock = require('mockjs');
  * 接受的字段：username,password
  * 测试：postman
  */
+global.count=0;
 router.post('/Login', (req, res) => {
-    let { username, password } = req.body
-    //请求数据库
+    var username=req.body.params.username;
+    var password=req.body.params.password;
     let sql = "select * from userinfo where username=? and password=?";
     let arr = [username, password]
     sqlFn(sql, arr, result => {
@@ -59,7 +60,7 @@ router.post("/register", (req, res) => {
     const {
         username,
         password
-    } = req.body;
+    } = req.query;
     const sql = "insert into userinfo values(null,?,?)";
     const arr = [username, password];
     sqlFn(sql, arr, (result) => {
@@ -75,6 +76,13 @@ router.post("/register", (req, res) => {
         }
     })
 })
+//const bodyParser = require('body-parser');
+// app.use(bodyParser.json())
+router.post('/bodyParams', (req, res) => {
+    console.log('嗯进来了')
+    console.log('name:'+req.body.name)
+    console.log('pas:'+req.body.pass)
+})
 
 
 /**
@@ -82,7 +90,6 @@ router.post("/register", (req, res) => {
  * 参数：page 页码
  */
 router.get('/projectList', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
     const page = req.query.page || 1;
     const sqlLen = "select * from project where id";
     sqlFn(sqlLen, null, data => {
@@ -111,7 +118,8 @@ router.get('/projectList', (req, res) => {
  * 参数：search
  */
 router.get("/search", (req, res) => {
-    var search = req.query.search;
+    let search = req.query.search;
+    console.log("search:",req.query.search)
     const sql = "select * from project where concat(`title`,`sellPoint`,`descs`) like '%" + search + "%'";
     sqlFn(sql, null, (result) => {
         if (result.length > 0) {
